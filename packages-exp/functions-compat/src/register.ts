@@ -24,9 +24,14 @@ import {
   Component,
   ComponentType,
   InstanceFactory,
-  ComponentContainer
+  ComponentContainer,
+  InstanceFactoryOptions
 } from '@firebase/component';
-import { Functions as FunctionsServiceExp } from '@firebase/functions-exp';
+import {
+  Functions as FunctionsServiceExp,
+  HttpsCallableOptions,
+  HttpsCallable
+} from '@firebase/functions-exp';
 
 declare module '@firebase/component' {
   interface NameServiceMapping {
@@ -36,9 +41,17 @@ declare module '@firebase/component' {
   }
 }
 
+declare module '@firebase/functions-exp' {
+  export function httpsCallable<RequestData = unknown, ResponseData = unknown>(
+    functionsInstance: FunctionsService | FunctionsServiceExp,
+    name: string,
+    options?: HttpsCallableOptions
+  ): HttpsCallable<RequestData, ResponseData>;
+}
+
 const factory: InstanceFactory<'functions-compat'> = (
   container: ComponentContainer,
-  regionOrCustomDomain?: string
+  { instanceIdentifier: regionOrCustomDomain }: InstanceFactoryOptions
 ) => {
   // Dependencies
   const app = container.getProvider('app-compat').getImmediate();
